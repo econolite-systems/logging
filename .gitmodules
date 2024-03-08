@@ -1,0 +1,27 @@
+[submodule "common"]
+	path = common
+	url = ../common
+[submodule "config"]
+	path = config
+	url = ../config
+[submodule "device-manager"]
+	path = device-manager
+	url = ../device-manager
+[submodule "entities"]
+	path = entities
+	url = ../entities
+[submodule "ess"]
+	path = ess
+	url = ../ess
+[submodule "pavement-condition"]
+	path = pavement-condition
+	url = ../pavement-condition
+[submodule "status"]
+	path = status
+	url = ../status
+[submodule "vehicle-priority"]
+	path = vehicle-priority
+	url = ../vehicle-priority
+[submodule "wrong-way-driver"]
+	path = wrong-way-driver
+	url = ../wrong-way-driver
