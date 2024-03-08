@@ -1,0 +1,12 @@
+loggingWorker:
+  name: ode-logging-worker
+  imageRepository: cosysdev.azurecr.io/ode-logging-worker
+  resources: {}
+  kafka:
+    groupid: 'devicestatus.logging'  
+  ingress:
+    host: api.mound-rd.cosysdev.com
+  service:
+    port: 80
+  probes:
+    enabled: false

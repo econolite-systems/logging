@@ -1,0 +1,129 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.loggingWorker.name }}
+data:
+  appsettings.Production.json: |
+    {
+      "Authentication": {
+          "Authority": "{{ .Values.url.identity }}"
+      },
+      "Kafka": {
+          "bootstrap": {
+              "servers": "{{ .Values.kafka.server }}"
+          },
+          "ssl": {
+            "ca": "{{.Values.kafka.ca}}",
+            "certificate": "{{.Values.kafka.certificate}}"
+          },
+          "sasl": {
+              "mechanism": "{{.Values.kafka.security.mechanism}}",
+              "username": "{{ .Values.kafka.userName }}"
+          },
+          "security": {
+              "protocol": "{{ .Values.kafka.security.protocol}}"
+          },
+          "groupId": "{{ .Values.loggingWorker.kafka.groupId }}"
+      },
+      "Mongo": {
+        "DbName": "{{ .Values.mongo.databaseName }}"
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.loggingWorker.name }}
+  labels:
+    app: {{ .Values.loggingWorker.name }}
+    chart: {{ .Values.loggingWorker.name }}
+    release: {{ .Release.Name }}
+ 
+ 
+  annotations:
+ 
+spec:
+  revisionHistoryLimit: 0
+  replicas: {{ .Values.loggingWorker.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      app: {{ .Values.loggingWorker.name }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.loggingWorker.name }}
+     
+        release: {{ .Release.Name }}
+      annotations:
+
+    spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: "kubernetes.io/hostname"
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              release: {{ .Release.Name }}
+      imagePullSecrets:
+        - name: {{ .Values.secrets.imagePullSecret }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ .Values.loggingWorker.name }}
+      containers:
+        - name:  {{ .Values.loggingWorker.name }}
+          image: "{{ .Values.loggingWorker.imageRepository }}:{{ .Values.loggingWorker.imageTag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: Kafka__sasl__password
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.kafka.userName }}
+                  key: password
+            - name: ConnectionStrings__Mongo
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-cs
+                  key: MongoRWConnectionString
+          volumeMounts:
+            - name: config
+              mountPath: /app/appsettings.Production.json
+              subPath: appsettings.Production.json
+              readOnly: true
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          {{- if .Values.loggingWorker.probes.enabled }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          {{- end }}
+          resources:
+{{ toYaml .Values.loggingWorker.resources | indent 12 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.loggingWorker.name }}
+  labels:
+    app: {{ .Values.loggingWorker.name }}
+    chart: {{ .Values.loggingWorker.name }}
+    release: {{ .Release.Name }}
+ 
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.loggingWorker.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ .Values.loggingWorker.name }}
+    release: {{ .Release.Name }}

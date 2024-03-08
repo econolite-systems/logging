@@ -1,0 +1,4 @@
+apiVersion: v1
+description: ODE Logging Worker
+name: "ode-logging-worker"
+version: 0.1.0

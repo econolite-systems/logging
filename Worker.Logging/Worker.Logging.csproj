@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+<!-- SPDX-License-Identifier: MIT -->
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <RootNamespace>Econolite.Ode.Worker.Logging</RootNamespace>
+        <UserSecretsId>dotnet-Worker-4E6B0024-A744-4311-B43C-2DDFFAE9AF78</UserSecretsId>
+    <Copyright>2023-&lt;&lt;CURRENT_YEAR&gt;&gt; Econolite Systems, Inc.</Copyright>
+</PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.18.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="$(SolutionDir)\common\Extensions.AspNet\Extensions.AspNet.csproj" />
+        <ProjectReference Include="$(SolutionDir)\ess\Service.ESS\Services.Ess.csproj" />
+        <ProjectReference Include="$(SolutionDir)\ess\Worker.Ess\Worker.Ess.csproj" />
+        <ProjectReference Include="$(SolutionDir)\pavement-condition\Repository.PavementCondition\Repository.PavementCondition.csproj" />
+        <ProjectReference Include="$(SolutionDir)\pavement-condition\Worker.Logging\Worker.PavementCondition.csproj" />
+        <ProjectReference Include="$(SolutionDir)\vehicle-priority\Domain.VehiclePriority\Domain.VehiclePriority.csproj" />
+        <ProjectReference Include="$(SolutionDir)\vehicle-priority\Repository.VehiclePriority\Repository.VehiclePriority.csproj" />
+        <ProjectReference Include="$(SolutionDir)\wrong-way-driver\Worker.WrongWayDriver\Worker.WrongWayDriver.csproj" />
+        <ProjectReference Include="..\common\Monitoring.HealthChecks.Mongo\Monitoring.HealthChecks.Mongo.csproj" />
+        <ProjectReference Include="..\Repository.Logging\Repository.Logging.csproj" />
+    </ItemGroup>
+
+</Project>
